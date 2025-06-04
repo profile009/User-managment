@@ -1,0 +1,1710 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management System</title>
+    <style>
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2980b9;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --danger-color: #e74c3c;
+            --success-color: #2ecc71;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header Styles */
+        header {
+            background-color: var(--dark-color);
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .auth-buttons button {
+            margin-left: 10px;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .login-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .register-btn {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            padding: 2rem 0;
+            min-height: calc(100vh - 150px);
+        }
+
+        .options-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 2rem;
+        }
+
+        .option-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            width: 300px;
+            text-align: center;
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .option-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .option-card h2 {
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .option-card p {
+            color: #666;
+            margin-bottom: 1.5rem;
+        }
+
+        .option-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background-color 0.3s;
+        }
+
+        .option-btn:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            position: relative;
+        }
+
+        .close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #666;
+        }
+
+        .close-btn:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-submit {
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s;
+            width: 100%;
+        }
+
+        .form-submit:hover {
+            background-color: var(--secondary-color);
+        }
+
+        /* Dashboard Styles */
+        .dashboard {
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+
+        .sidebar {
+            width: 250px;
+            background-color: var(--dark-color);
+            color: white;
+            padding: 1.5rem 0;
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-header {
+            padding: 0 1.5rem 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar-header p {
+            color: #bbb;
+            font-size: 0.9rem;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 1.5rem 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: block;
+            padding: 10px 1.5rem;
+            color: white;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-menu i {
+            margin-right: 10px;
+        }
+
+        .main-content-dashboard {
+            flex: 1;
+            padding: 2rem;
+            background-color: #f9f9f9;
+        }
+
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .dashboard-title {
+            font-size: 1.8rem;
+            color: var(--dark-color);
+        }
+
+        .logout-btn {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-card h3 {
+            color: #666;
+            margin-bottom: 0.5rem;
+            font-size: 1rem;
+        }
+
+        .stat-card p {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--dark-color);
+        }
+
+        .table-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f5f5f5;
+            font-weight: 500;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-right: 5px;
+        }
+
+        .edit-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .delete-btn {
+            background-color: var(--danger-color);
+            color: white;
+        }
+
+        .view-btn {
+            background-color: var(--success-color);
+            color: white;
+        }
+
+        /* Profile Styles */
+        .profile-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .profile-image {
+            flex: 0 0 250px;
+        }
+
+        .profile-image img {
+            width: 100%;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .profile-details {
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .profile-details h2 {
+            margin-bottom: 1rem;
+            color: var(--dark-color);
+        }
+
+        .profile-info {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 1.5rem;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #eee;
+        }
+
+        .info-label {
+            font-weight: 500;
+            width: 150px;
+            color: #666;
+        }
+
+        .info-value {
+            flex: 1;
+        }
+
+        /* Responsive Styles */
+        @media (max-width: 768px) {
+            .dashboard {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                transform: translateX(-100%);
+                position: fixed;
+                top: 80px;
+                bottom: 0;
+                z-index: 100;
+            }
+
+            .sidebar.active {
+                transform: translateX(0);
+            }
+
+            .main-content-dashboard {
+                margin-top: 60px;
+                padding: 1rem;
+            }
+
+            .menu-toggle {
+                display: block;
+                background: none;
+                border: none;
+                color: white;
+                font-size: 1.5rem;
+                cursor: pointer;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Mobile menu toggle */
+        .menu-toggle {
+            display: none;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* User Dashboard Styles */
+        .user-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 2rem;
+        }
+
+        /* Amount History Styles */
+        .amount-history {
+            margin-top: 2rem;
+        }
+
+        /* Footer Styles */
+        footer {
+            background-color: var(--dark-color);
+            color: white;
+            text-align: center;
+            padding: 1rem 0;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Home Page -->
+    <div id="home-page">
+        <header>
+            <div class="container">
+                <div class="logo">User Management System</div>
+                <div class="auth-buttons">
+                    <button class="login-btn" onclick="openModal('admin-login-modal')">Admin Login</button>
+                    <button class="register-btn" onclick="openModal('admin-register-modal')">Admin Register</button>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="container">
+                <h1 style="text-align: center; margin-bottom: 1rem;">Welcome to User Management System</h1>
+                <p style="text-align: center; color: #666; max-width: 800px; margin: 0 auto;">
+                    A comprehensive solution for managing users, tracking amounts, and monitoring expenses efficiently.
+                </p>
+
+                <div class="options-container">
+                    <div class="option-card">
+                        <h2>Admin Login</h2>
+                        <p>Access your admin dashboard to manage users and track finances.</p>
+                        <button class="option-btn" onclick="openModal('admin-login-modal')">Login</button>
+                    </div>
+
+                    <div class="option-card">
+                        <h2>Admin Register</h2>
+                        <p>Register your organization to start using our management system.</p>
+                        <button class="option-btn" onclick="openModal('admin-register-modal')">Register</button>
+                    </div>
+
+                    <div class="option-card">
+                        <h2>User Login</h2>
+                        <p>Users can login to view their profile and account information.</p>
+                        <button class="option-btn" onclick="openModal('user-login-modal')">Login</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="container">
+                <p>&copy; 2023 User Management System. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Admin Register Modal -->
+    <div id="admin-register-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('admin-register-modal')">&times;</span>
+            <h2>Admin Registration</h2>
+            <form id="admin-register-form">
+                <div class="form-group">
+                    <label for="org-name">Organization Name</label>
+                    <input type="text" id="org-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-name">Admin Name</label>
+                    <input type="text" id="admin-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-position">Admin Position</label>
+                    <input type="text" id="admin-position" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-image">Admin Image (URL)</label>
+                    <input type="text" id="admin-image" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-email">Admin Email</label>
+                    <input type="email" id="admin-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-phone">Admin Phone Number</label>
+                    <input type="tel" id="admin-phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-password">Password</label>
+                    <input type="password" id="admin-password" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-confirm-password">Confirm Password</label>
+                    <input type="password" id="admin-confirm-password" required>
+                </div>
+                <button type="submit" class="form-submit">Register</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Login Modal -->
+    <div id="admin-login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('admin-login-modal')">&times;</span>
+            <h2>Admin Login</h2>
+            <form id="admin-login-form">
+                <div class="form-group">
+                    <label for="admin-login-email">Email</label>
+                    <input type="email" id="admin-login-email" required>
+                </div>
+                <div class="form-group">
+                    <label for="admin-login-password">Password</label>
+                    <input type="password" id="admin-login-password" required>
+                </div>
+                <button type="submit" class="form-submit">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- User Login Modal -->
+    <div id="user-login-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn" onclick="closeModal('user-login-modal')">&times;</span>
+            <h2>User Login</h2>
+            <form id="user-login-form">
+                <div class="form-group">
+                    <label for="user-login-phone">Phone Number</label>
+                    <input type="tel" id="user-login-phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="user-login-code">Code Number</label>
+                    <input type="text" id="user-login-code" required>
+                </div>
+                <button type="submit" class="form-submit">Login</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div id="admin-dashboard" style="display: none;">
+        <header>
+            <div class="container">
+                <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+                <div class="logo" id="dashboard-org-name"></div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <div class="dashboard">
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h3 id="sidebar-admin-name"></h3>
+                    <p id="sidebar-admin-position"></p>
+                </div>
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="active" onclick="showDashboardSection('dashboard-home')"><i>📊</i> Dashboard</a></li>
+                    <li><a href="#" onclick="showDashboardSection('add-user')"><i>➕</i> Add New User</a></li>
+                    <li><a href="#" onclick="showDashboardSection('user-list')"><i>👥</i> User List</a></li>
+                    <li><a href="#" onclick="showDashboardSection('add-expense')"><i>💸</i> Add New Expense</a></li>
+                    <li><a href="#" onclick="showDashboardSection('expense-list')"><i>📋</i> Expense List</a></li>
+                </ul>
+            </div>
+
+            <div class="main-content-dashboard">
+                <!-- Dashboard Home -->
+                <div id="dashboard-home" class="dashboard-section">
+                    <div class="dashboard-header">
+                        <h1 class="dashboard-title">Dashboard Overview</h1>
+                    </div>
+
+                    <div id="alert-container"></div>
+
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <h3>Total Users</h3>
+                            <p id="total-users">0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Amount</h3>
+                            <p id="total-amount">৳0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Total Expenses</h3>
+                            <p id="total-expenses">৳0</p>
+                        </div>
+                        <div class="stat-card">
+                            <h3>Current Balance</h3>
+                            <p id="current-balance">৳0</p>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <h3>Recent Users</h3>
+                        <table id="recent-users-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Code</th>
+                                    <th>Amount</th>
+                                    <th>Join Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Recent users will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="table-container amount-history">
+                        <h3>Recent Transactions</h3>
+                        <table id="recent-transactions-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Type</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Recent transactions will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Add User Section -->
+                <div id="add-user" class="dashboard-section" style="display: none;">
+                    <div class="dashboard-header">
+                        <h1 class="dashboard-title">Add New User</h1>
+                    </div>
+
+                    <div id="add-user-alert"></div>
+
+                    <div class="table-container">
+                        <form id="add-user-form">
+                            <div class="form-group">
+                                <label for="user-name">User Name</label>
+                                <input type="text" id="user-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="user-image">User Image (URL)</label>
+                                <input type="text" id="user-image" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="user-phone">Phone Number</label>
+                                <input type="tel" id="user-phone" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="user-code">Code Number</label>
+                                <input type="text" id="user-code" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="user-amount">Amount</label>
+                                <input type="number" id="user-amount" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="user-blood-group">Blood Group</label>
+                                <select id="user-blood-group" required>
+                                    <option value="">Select Blood Group</option>
+                                    <option value="A+">A+</option>
+                                    <option value="A-">A-</option>
+                                    <option value="B+">B+</option>
+                                    <option value="B-">B-</option>
+                                    <option value="AB+">AB+</option>
+                                    <option value="AB-">AB-</option>
+                                    <option value="O+">O+</option>
+                                    <option value="O-">O-</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="user-join-date">Join Date</label>
+                                <input type="date" id="user-join-date" required>
+                            </div>
+                            <button type="submit" class="form-submit">Add User</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- User List Section -->
+                <div id="user-list" class="dashboard-section" style="display: none;">
+                    <div class="dashboard-header">
+                        <h1 class="dashboard-title">User List</h1>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="user-list-table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Phone</th>
+                                    <th>Code</th>
+                                    <th>Amount</th>
+                                    <th>Join Date</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Users will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- User Profile Section -->
+                <div id="user-profile" class="dashboard-section" style="display: none;">
+                    <div class="dashboard-header">
+                        <h1 class="dashboard-title">User Profile</h1>
+                        <button class="logout-btn" onclick="showDashboardSection('user-list')">Back to List</button>
+                    </div>
+
+                    <div id="user-profile-alert"></div>
+
+                    <div class="profile-container">
+                        <div class="profile-image">
+                            <img id="profile-user-image" src="" alt="User Image">
+                        </div>
+                        <div class="profile-details">
+                            <h2 id="profile-user-name"></h2>
+                            <div class="profile-info">
+                                <div class="info-row">
+                                    <div class="info-label">Phone Number:</div>
+                                    <div class="info-value" id="profile-user-phone"></div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Code Number:</div>
+                                    <div class="info-value" id="profile-user-code"></div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Blood Group:</div>
+                                    <div class="info-value" id="profile-user-blood-group"></div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Join Date:</div>
+                                    <div class="info-value" id="profile-user-join-date"></div>
+                                </div>
+                                <div class="info-row">
+                                    <div class="info-label">Total Amount:</div>
+                                    <div class="info-value" id="profile-user-total-amount"></div>
+                                </div>
+                            </div>
+
+                            <div class="table-container amount-history">
+                                <h3>Add New Amount</h3>
+                                <form id="add-user-amount-form">
+                                    <input type="hidden" id="profile-user-id">
+                                    <div class="form-group">
+                                        <label for="additional-amount">Amount</label>
+                                        <input type="number" id="additional-amount" required>
+                                    </div>
+                                    <button type="submit" class="form-submit">Add Amount</button>
+                                </form>
+                            </div>
+
+                            <div class="table-container amount-history">
+                                <h3>Amount History</h3>
+                                <table id="user-amount-history-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Date</th>
+                                            <th>Amount</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <!-- Amount history will be added here dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Add Expense Section -->
+                <div id="add-expense" class="dashboard-section" style="display: none;">
+                    <div class="dashboard-header">
+                        <h1 class="dashboard-title">Add New Expense</h1>
+                    </div>
+
+                    <div id="add-expense-alert"></div>
+
+                    <div class="table-container">
+                        <form id="add-expense-form">
+                            <div class="form-group">
+                                <label for="expense-amount">Amount</label>
+                                <input type="number" id="expense-amount" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="expense-description">Description</label>
+                                <textarea id="expense-description" rows="3" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="expense-date">Date</label>
+                                <input type="date" id="expense-date" required>
+                            </div>
+                            <button type="submit" class="form-submit">Add Expense</button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Expense List Section -->
+                <div id="expense-list" class="dashboard-section" style="display: none;">
+                    <div class="dashboard-header">
+                        <h1 class="dashboard-title">Expense List</h1>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="expense-list-table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Description</th>
+                                    <th>Amount</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Expenses will be added here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Expense Detail Section -->
+                <div id="expense-detail" class="dashboard-section" style="display: none;">
+                    <div class="dashboard-header">
+                        <h1 class="dashboard-title">Expense Details</h1>
+                        <button class="logout-btn" onclick="showDashboardSection('expense-list')">Back to List</button>
+                    </div>
+
+                    <div class="profile-info">
+                        <div class="info-row">
+                            <div class="info-label">Date:</div>
+                            <div class="info-value" id="expense-detail-date"></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Amount:</div>
+                            <div class="info-value" id="expense-detail-amount"></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">Description:</div>
+                            <div class="info-value" id="expense-detail-description"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Dashboard -->
+    <div id="user-dashboard" style="display: none;">
+        <header>
+            <div class="container">
+                <div class="logo">User Dashboard</div>
+                <button class="logout-btn" onclick="logout()">Logout</button>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="container">
+                <div id="user-alert-container"></div>
+
+                <div class="user-stats">
+                    <div class="stat-card">
+                        <h3>Total Users</h3>
+                        <p id="user-total-users">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Your Total Amount</h3>
+                        <p id="user-total-amount">৳0</p>
+                    </div>
+                </div>
+
+                <div class="profile-container">
+                    <div class="profile-image">
+                        <img id="user-profile-image" src="" alt="User Image">
+                    </div>
+                    <div class="profile-details">
+                        <h2 id="user-profile-name"></h2>
+                        <div class="profile-info">
+                            <div class="info-row">
+                                <div class="info-label">Phone Number:</div>
+                                <div class="info-value" id="user-profile-phone"></div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Code Number:</div>
+                                <div class="info-value" id="user-profile-code"></div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Blood Group:</div>
+                                <div class="info-value" id="user-profile-blood-group"></div>
+                            </div>
+                            <div class="info-row">
+                                <div class="info-label">Join Date:</div>
+                                <div class="info-value" id="user-profile-join-date"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="table-container amount-history">
+                    <h3>Your Amount History</h3>
+                    <table id="user-amount-history">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- User amount history will be added here dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="container">
+                <p>&copy; 2023 User Management System. All rights reserved.</p>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        // Global variables
+        let currentAdmin = null;
+        let currentUser = null;
+        let allAdmins = JSON.parse(localStorage.getItem('allAdmins')) || [];
+        let allUsers = JSON.parse(localStorage.getItem('allUsers')) || {};
+        let allExpenses = JSON.parse(localStorage.getItem('allExpenses')) || {};
+
+        // DOM Content Loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize forms
+            initForms();
+        });
+
+        // Initialize all forms
+        function initForms() {
+            // Admin Register Form
+            document.getElementById('admin-register-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                registerAdmin();
+            });
+
+            // Admin Login Form
+            document.getElementById('admin-login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                loginAdmin();
+            });
+
+            // User Login Form
+            document.getElementById('user-login-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                loginUser();
+            });
+
+            // Add User Form
+            document.getElementById('add-user-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addUser();
+            });
+
+            // Add User Amount Form
+            document.getElementById('add-user-amount-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addUserAmount();
+            });
+
+            // Add Expense Form
+            document.getElementById('add-expense-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                addExpense();
+            });
+        }
+
+        // Modal functions
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // Register Admin
+        function registerAdmin() {
+            const orgName = document.getElementById('org-name').value;
+            const adminName = document.getElementById('admin-name').value;
+            const adminPosition = document.getElementById('admin-position').value;
+            const adminImage = document.getElementById('admin-image').value;
+            const adminEmail = document.getElementById('admin-email').value;
+            const adminPhone = document.getElementById('admin-phone').value;
+            const adminPassword = document.getElementById('admin-password').value;
+            const adminConfirmPassword = document.getElementById('admin-confirm-password').value;
+
+            // Validate passwords match
+            if (adminPassword !== adminConfirmPassword) {
+                alert('Passwords do not match');
+                return;
+            }
+
+            // Check if admin already exists
+            const existingAdmin = allAdmins.find(admin => admin.email === adminEmail);
+            if (existingAdmin) {
+                alert('Admin with this email already exists');
+                return;
+            }
+
+            // Create new admin
+            const newAdmin = {
+                id: generateId(),
+                orgName,
+                name: adminName,
+                position: adminPosition,
+                image: adminImage,
+                email: adminEmail,
+                phone: adminPhone,
+                password: adminPassword,
+                createdAt: new Date().toISOString()
+            };
+
+            // Add to allAdmins array
+            allAdmins.push(newAdmin);
+            localStorage.setItem('allAdmins', JSON.stringify(allAdmins));
+
+            // Initialize users and expenses for this admin
+            allUsers[newAdmin.id] = [];
+            allExpenses[newAdmin.id] = [];
+            localStorage.setItem('allUsers', JSON.stringify(allUsers));
+            localStorage.setItem('allExpenses', JSON.stringify(allExpenses));
+
+            // Close modal and show success
+            closeModal('admin-register-modal');
+            alert('Admin registered successfully! You can now login.');
+        }
+
+        // Login Admin
+        function loginAdmin() {
+            const email = document.getElementById('admin-login-email').value;
+            const password = document.getElementById('admin-login-password').value;
+
+            // Find admin
+            const admin = allAdmins.find(admin => admin.email === email && admin.password === password);
+            if (!admin) {
+                alert('Invalid email or password');
+                return;
+            }
+
+            // Set current admin
+            currentAdmin = admin;
+            localStorage.setItem('currentAdmin', JSON.stringify(currentAdmin));
+
+            // Hide home page and show admin dashboard
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('admin-dashboard').style.display = 'block';
+
+            // Load admin dashboard
+            loadAdminDashboard();
+            closeModal('admin-login-modal');
+        }
+
+        // Login User
+        function loginUser() {
+            const phone = document.getElementById('user-login-phone').value;
+            const code = document.getElementById('user-login-code').value;
+
+            // Find which admin this user belongs to
+            let foundUser = null;
+            let adminId = null;
+
+            for (const [key, users] of Object.entries(allUsers)) {
+                const user = users.find(u => u.phone === phone && u.code === code);
+                if (user) {
+                    foundUser = user;
+                    adminId = key;
+                    break;
+                }
+            }
+
+            if (!foundUser) {
+                alert('Invalid phone number or code');
+                return;
+            }
+
+            // Set current user and admin (for org info)
+            currentUser = foundUser;
+            currentAdmin = allAdmins.find(admin => admin.id === adminId);
+            localStorage.setItem('currentUser', JSON.stringify(currentUser));
+            localStorage.setItem('currentAdmin', JSON.stringify(currentAdmin));
+
+            // Hide home page and show user dashboard
+            document.getElementById('home-page').style.display = 'none';
+            document.getElementById('user-dashboard').style.display = 'block';
+
+            // Load user dashboard
+            loadUserDashboard();
+            closeModal('user-login-modal');
+        }
+
+        // Load Admin Dashboard
+        function loadAdminDashboard() {
+            // Set admin info in sidebar
+            document.getElementById('dashboard-org-name').textContent = currentAdmin.orgName;
+            document.getElementById('sidebar-admin-name').textContent = currentAdmin.name;
+            document.getElementById('sidebar-admin-position').textContent = currentAdmin.position;
+
+            // Load dashboard stats
+            updateDashboardStats();
+
+            // Load recent users
+            loadRecentUsers();
+
+            // Load recent transactions
+            loadRecentTransactions();
+        }
+
+        // Update Dashboard Stats
+        function updateDashboardStats() {
+            const users = allUsers[currentAdmin.id] || [];
+            const expenses = allExpenses[currentAdmin.id] || [];
+
+            // Total users
+            document.getElementById('total-users').textContent = users.length;
+
+            // Total amount (sum of all user amounts)
+            const totalAmount = users.reduce((sum, user) => sum + user.amount, 0);
+            document.getElementById('total-amount').textContent = `৳${totalAmount.toLocaleString()}`;
+
+            // Total expenses
+            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            document.getElementById('total-expenses').textContent = `৳${totalExpenses.toLocaleString()}`;
+
+            // Current balance
+            const currentBalance = totalAmount - totalExpenses;
+            document.getElementById('current-balance').textContent = `৳${currentBalance.toLocaleString()}`;
+        }
+
+        // Load Recent Users
+        function loadRecentUsers() {
+            const users = allUsers[currentAdmin.id] || [];
+            const tbody = document.querySelector('#recent-users-table tbody');
+            tbody.innerHTML = '';
+
+            // Sort by join date (newest first) and take first 5
+            const recentUsers = [...users]
+                .sort((a, b) => new Date(b.joinDate) - new Date(a.joinDate))
+                .slice(0, 5);
+
+            recentUsers.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td>${user.phone}</td>
+                    <td>${user.code}</td>
+                    <td>৳${user.amount.toLocaleString()}</td>
+                    <td>${formatDate(user.joinDate)}</td>
+                    <td>
+                        <button class="action-btn view-btn" onclick="viewUser('${user.id}')">View</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Load Recent Transactions
+        function loadRecentTransactions() {
+            const expenses = allExpenses[currentAdmin.id] || [];
+            const tbody = document.querySelector('#recent-transactions-table tbody');
+            tbody.innerHTML = '';
+
+            // Sort by date (newest first) and take first 5
+            const recentExpenses = [...expenses]
+                .sort((a, b) => new Date(b.date) - new Date(a.date))
+                .slice(0, 5);
+
+            recentExpenses.forEach(expense => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(expense.date)}</td>
+                    <td>${expense.description}</td>
+                    <td>৳${expense.amount.toLocaleString()}</td>
+                    <td>Expense</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Add User
+        function addUser() {
+            const name = document.getElementById('user-name').value;
+            const image = document.getElementById('user-image').value;
+            const phone = document.getElementById('user-phone').value;
+            const code = document.getElementById('user-code').value;
+            const amount = parseFloat(document.getElementById('user-amount').value);
+            const bloodGroup = document.getElementById('user-blood-group').value;
+            const joinDate = document.getElementById('user-join-date').value;
+
+            // Check if user with same phone or code already exists
+            const existingUserPhone = allUsers[currentAdmin.id].find(user => user.phone === phone);
+            const existingUserCode = allUsers[currentAdmin.id].find(user => user.code === code);
+
+            if (existingUserPhone) {
+                showAlert('add-user-alert', 'User with this phone number already exists', 'danger');
+                return;
+            }
+
+            if (existingUserCode) {
+                showAlert('add-user-alert', 'User with this code already exists', 'danger');
+                return;
+            }
+
+            // Create new user
+            const newUser = {
+                id: generateId(),
+                adminId: currentAdmin.id,
+                name,
+                image,
+                phone,
+                code,
+                amount,
+                bloodGroup,
+                joinDate,
+                amountHistory: [{
+                    date: new Date().toISOString(),
+                    amount: amount,
+                    type: 'initial'
+                }],
+                createdAt: new Date().toISOString()
+            };
+
+            // Add to users array
+            allUsers[currentAdmin.id].push(newUser);
+            localStorage.setItem('allUsers', JSON.stringify(allUsers));
+
+            // Show success message
+            showAlert('add-user-alert', 'User added successfully!', 'success');
+
+            // Reset form
+            document.getElementById('add-user-form').reset();
+
+            // Update dashboard
+            updateDashboardStats();
+            loadRecentUsers();
+        }
+
+        // View User
+        function viewUser(userId) {
+            const user = allUsers[currentAdmin.id].find(u => u.id === userId);
+            if (!user) return;
+
+            // Set user data in profile
+            document.getElementById('profile-user-image').src = user.image;
+            document.getElementById('profile-user-image').alt = user.name;
+            document.getElementById('profile-user-name').textContent = user.name;
+            document.getElementById('profile-user-phone').textContent = user.phone;
+            document.getElementById('profile-user-code').textContent = user.code;
+            document.getElementById('profile-user-blood-group').textContent = user.bloodGroup;
+            document.getElementById('profile-user-join-date').textContent = formatDate(user.joinDate);
+            document.getElementById('profile-user-total-amount').textContent = `৳${user.amount.toLocaleString()}`;
+            document.getElementById('profile-user-id').value = user.id;
+
+            // Load amount history
+            const tbody = document.querySelector('#user-amount-history-table tbody');
+            tbody.innerHTML = '';
+
+            user.amountHistory.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(entry.date)}</td>
+                    <td>৳${entry.amount.toLocaleString()}</td>
+                    <td>
+                        <button class="action-btn delete-btn" onclick="deleteAmountEntry('${user.id}', '${entry.date}')">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+
+            // Show user profile section
+            showDashboardSection('user-profile');
+        }
+
+        // Add User Amount
+        function addUserAmount() {
+            const userId = document.getElementById('profile-user-id').value;
+            const additionalAmount = parseFloat(document.getElementById('additional-amount').value);
+
+            if (isNaN(additionalAmount) || additionalAmount <= 0) {
+                showAlert('user-profile-alert', 'Please enter a valid amount', 'danger');
+                return;
+            }
+
+            // Find user
+            const userIndex = allUsers[currentAdmin.id].findIndex(u => u.id === userId);
+            if (userIndex === -1) return;
+
+            // Update user amount
+            allUsers[currentAdmin.id][userIndex].amount += additionalAmount;
+            allUsers[currentAdmin.id][userIndex].amountHistory.push({
+                date: new Date().toISOString(),
+                amount: additionalAmount,
+                type: 'additional'
+            });
+
+            // Save to localStorage
+            localStorage.setItem('allUsers', JSON.stringify(allUsers));
+
+            // Show success message
+            showAlert('user-profile-alert', 'Amount added successfully!', 'success');
+
+            // Reset form
+            document.getElementById('add-user-amount-form').reset();
+
+            // Reload user profile
+            viewUser(userId);
+
+            // Update dashboard stats
+            updateDashboardStats();
+        }
+
+        // Delete Amount Entry
+        function deleteAmountEntry(userId, entryDate) {
+            if (!confirm('Are you sure you want to delete this amount entry?')) return;
+
+            // Find user
+            const userIndex = allUsers[currentAdmin.id].findIndex(u => u.id === userId);
+            if (userIndex === -1) return;
+
+            // Find entry
+            const entryIndex = allUsers[currentAdmin.id][userIndex].amountHistory.findIndex(
+                e => e.date === entryDate
+            );
+            if (entryIndex === -1) return;
+
+            // Get amount to subtract
+            const amountToSubtract = allUsers[currentAdmin.id][userIndex].amountHistory[entryIndex].amount;
+
+            // Update user amount
+            allUsers[currentAdmin.id][userIndex].amount -= amountToSubtract;
+
+            // Remove entry
+            allUsers[currentAdmin.id][userIndex].amountHistory.splice(entryIndex, 1);
+
+            // Save to localStorage
+            localStorage.setItem('allUsers', JSON.stringify(allUsers));
+
+            // Reload user profile
+            viewUser(userId);
+
+            // Update dashboard stats
+            updateDashboardStats();
+        }
+
+        // Add Expense
+        function addExpense() {
+            const amount = parseFloat(document.getElementById('expense-amount').value);
+            const description = document.getElementById('expense-description').value;
+            const date = document.getElementById('expense-date').value;
+
+            if (isNaN(amount) || amount <= 0) {
+                showAlert('add-expense-alert', 'Please enter a valid amount', 'danger');
+                return;
+            }
+
+            if (!description) {
+                showAlert('add-expense-alert', 'Please enter a description', 'danger');
+                return;
+            }
+
+            // Check if expense exceeds available balance
+            const users = allUsers[currentAdmin.id] || [];
+            const expenses = allExpenses[currentAdmin.id] || [];
+            
+            const totalAmount = users.reduce((sum, user) => sum + user.amount, 0);
+            const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+            const currentBalance = totalAmount - totalExpenses;
+
+            if (amount > currentBalance) {
+                showAlert('add-expense-alert', 'Expense amount exceeds available balance', 'danger');
+                return;
+            }
+
+            // Create new expense
+            const newExpense = {
+                id: generateId(),
+                adminId: currentAdmin.id,
+                amount,
+                description,
+                date,
+                createdAt: new Date().toISOString()
+            };
+
+            // Add to expenses array
+            allExpenses[currentAdmin.id].push(newExpense);
+            localStorage.setItem('allExpenses', JSON.stringify(allExpenses));
+
+            // Show success message
+            showAlert('add-expense-alert', 'Expense added successfully!', 'success');
+
+            // Reset form
+            document.getElementById('add-expense-form').reset();
+
+            // Update dashboard
+            updateDashboardStats();
+            loadRecentTransactions();
+        }
+
+        // View Expense
+        function viewExpense(expenseId) {
+            const expense = allExpenses[currentAdmin.id].find(e => e.id === expenseId);
+            if (!expense) return;
+
+            // Set expense data
+            document.getElementById('expense-detail-date').textContent = formatDate(expense.date);
+            document.getElementById('expense-detail-amount').textContent = `৳${expense.amount.toLocaleString()}`;
+            document.getElementById('expense-detail-description').textContent = expense.description;
+
+            // Show expense detail section
+            showDashboardSection('expense-detail');
+        }
+
+        // Load User Dashboard
+        function loadUserDashboard() {
+            // Set user info
+            document.getElementById('user-profile-image').src = currentUser.image;
+            document.getElementById('user-profile-image').alt = currentUser.name;
+            document.getElementById('user-profile-name').textContent = currentUser.name;
+            document.getElementById('user-profile-phone').textContent = currentUser.phone;
+            document.getElementById('user-profile-code').textContent = currentUser.code;
+            document.getElementById('user-profile-blood-group').textContent = currentUser.bloodGroup;
+            document.getElementById('user-profile-join-date').textContent = formatDate(currentUser.joinDate);
+
+            // Set stats
+            const users = allUsers[currentAdmin.id] || [];
+            document.getElementById('user-total-users').textContent = users.length;
+            document.getElementById('user-total-amount').textContent = `৳${currentUser.amount.toLocaleString()}`;
+
+            // Load amount history
+            const tbody = document.querySelector('#user-amount-history tbody');
+            tbody.innerHTML = '';
+
+            currentUser.amountHistory.forEach(entry => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(entry.date)}</td>
+                    <td>৳${entry.amount.toLocaleString()}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Show Dashboard Section
+        function showDashboardSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+
+            // Load data if needed
+            if (sectionId === 'user-list') {
+                loadUserList();
+            } else if (sectionId === 'expense-list') {
+                loadExpenseList();
+            } else if (sectionId === 'dashboard-home') {
+                updateDashboardStats();
+                loadRecentUsers();
+                loadRecentTransactions();
+            }
+        }
+
+        // Load User List
+        function loadUserList() {
+            const users = allUsers[currentAdmin.id] || [];
+            const tbody = document.querySelector('#user-list-table tbody');
+            tbody.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${user.name}</td>
+                    <td>${user.phone}</td>
+                    <td>${user.code}</td>
+                    <td>৳${user.amount.toLocaleString()}</td>
+                    <td>${formatDate(user.joinDate)}</td>
+                    <td>
+                        <button class="action-btn view-btn" onclick="viewUser('${user.id}')">View</button>
+                        <button class="action-btn edit-btn" onclick="editUser('${user.id}')">Edit</button>
+                        <button class="action-btn delete-btn" onclick="deleteUser('${user.id}')">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Edit User (placeholder - would need a form similar to add user)
+        function editUser(userId) {
+            alert('Edit user functionality would be implemented here');
+            // In a full implementation, this would open a form with user data pre-filled
+        }
+
+        // Delete User
+        function deleteUser(userId) {
+            if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) return;
+
+            // Find user index
+            const userIndex = allUsers[currentAdmin.id].findIndex(u => u.id === userId);
+            if (userIndex === -1) return;
+
+            // Remove user
+            allUsers[currentAdmin.id].splice(userIndex, 1);
+            localStorage.setItem('allUsers', JSON.stringify(allUsers));
+
+            // Reload user list
+            loadUserList();
+
+            // Update dashboard stats
+            updateDashboardStats();
+        }
+
+        // Load Expense List
+        function loadExpenseList() {
+            const expenses = allExpenses[currentAdmin.id] || [];
+            const tbody = document.querySelector('#expense-list-table tbody');
+            tbody.innerHTML = '';
+
+            expenses.forEach(expense => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${formatDate(expense.date)}</td>
+                    <td>${expense.description}</td>
+                    <td>৳${expense.amount.toLocaleString()}</td>
+                    <td>
+                        <button class="action-btn view-btn" onclick="viewExpense('${expense.id}')">View</button>
+                        <button class="action-btn delete-btn" onclick="deleteExpense('${expense.id}')">Delete</button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Delete Expense
+        function deleteExpense(expenseId) {
+            if (!confirm('Are you sure you want to delete this expense? This action cannot be undone.')) return;
+
+            // Find expense index
+            const expenseIndex = allExpenses[currentAdmin.id].findIndex(e => e.id === expenseId);
+            if (expenseIndex === -1) return;
+
+            // Remove expense
+            allExpenses[currentAdmin.id].splice(expenseIndex, 1);
+            localStorage.setItem('allExpenses', JSON.stringify(allExpenses));
+
+            // Reload expense list
+            loadExpenseList();
+
+            // Update dashboard stats
+            updateDashboardStats();
+        }
+
+        // Toggle Sidebar (for mobile)
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('active');
+        }
+
+        // Logout
+        function logout() {
+            // Clear current user/admin
+            currentAdmin = null;
+            currentUser = null;
+            localStorage.removeItem('currentAdmin');
+            localStorage.removeItem('currentUser');
+
+            // Show home page and hide dashboards
+            document.getElementById('home-page').style.display = 'block';
+            document.getElementById('admin-dashboard').style.display = 'none';
+            document.getElementById('user-dashboard').style.display = 'none';
+        }
+
+        // Helper functions
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        function formatDate(dateString) {
+            const options = { year: 'numeric', month: 'short', day: 'numeric' };
+            return new Date(dateString).toLocaleDateString(undefined, options);
+        }
+
+        function showAlert(containerId, message, type) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = `alert alert-${type}`;
+            alertDiv.textContent = message;
+
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            container.appendChild(alertDiv);
+
+            // Remove alert after 5 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html>
